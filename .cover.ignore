@@ -1,0 +1,13 @@
+/benchmark/
+/cmd/
+/pkg/testing
+/pkg/common/util.go
+
+# Ignore internal debug code
+/internal/debug.go
+
+# Ignore generated code
+/generated/
+/.+\.pb\.go
+.+_mock.go
+/mocks/

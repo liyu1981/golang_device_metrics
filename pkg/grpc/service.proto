@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "/iot_metric_service";
+
+// ========== Messages ==========
+
+message MetricRequest {
+  google.protobuf.Timestamp timestamp = 1;
+  double temperature = 2;
+  double battery = 3;
+}
+
+message ConfigRequest {
+  double temperature_threshold = 1;
+  double battery_threshold = 2;
+}
+
+message PostMetricsRequest {
+  string device_id = 1;
+  MetricRequest metric = 2;
+}
+
+message UpdateConfigRequest {
+  string device_id = 1;
+  ConfigRequest config = 2;
+}
+
+message DeviceRequest {
+  string device_id = 1;
+}
+
+message Alert {
+  uint64 id = 1;
+  string device_id = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  string type = 4;
+  string message = 5;
+}
+
+message AlertList {
+  StatusResponse status = 1;
+  repeated Alert alerts = 2;
+}
+
+message PostMetricsResponse {
+  StatusResponse status = 1;
+}
+
+message UpdateConfigResponse {
+  StatusResponse status = 1;
+}
+
+message GetAlertsResponse {
+  StatusResponse status = 1;
+  repeated Alert alerts = 2;
+}
+
+message StatusResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message PostLimiterRequest {
+  string device_id = 1;
+  double device_rate = 2;
+  int32 device_burst = 3;
+}
+
+message PostLimiterResponse {
+  StatusResponse status = 1;
+}
+
+// ========== Service ==========
+
+service IOTService {
+  rpc PostMetrics(PostMetricsRequest) returns (PostMetricsResponse);
+  rpc UpdateConfig(UpdateConfigRequest) returns (UpdateConfigResponse);
+  rpc GetAlerts(DeviceRequest) returns (GetAlertsResponse);
+  rpc PostLimiter(PostLimiterRequest) returns (PostLimiterResponse);
+}
