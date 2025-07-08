@@ -14,6 +14,14 @@ A rate limiter is in place to control the request rate from each device, prevent
 
 ## Local Run Instructions
 
+0. **Dev system requirement:**
+
+- Ubuntu Linux 22.04
+- Golang > 1.24.0
+- Nodejs > 22.15.1
+
+**Caution**: not tested on Macos, specifically `npm run postinstall` could fail. Recommend to use devcontainer of VSCode if on Macos (just open project in VSCode it will prompt open in devcontainer)
+
 1.  **Install dependencies:**
 
     ```bash
@@ -160,8 +168,7 @@ To interact with the gRPC endpoints, you can use a tool like `grpcurl`. First, e
 #### Update Configuration (gRPC)
 
 ```bash
-grpcurl -plaintext -d '{"deviceId": "device-1", "config": {"temperatureThreshold": 30.0, "batteryThreshold": 20.0}}' localhost:10801 IOTService/UpdateConf
-ig
+grpcurl -plaintext -d '{"deviceId": "device-1", "config": {"temperatureThreshold": 30.0, "batteryThreshold": 20.0}}' localhost:10801 IOTService/UpdateConfig
 ```
 
 response
@@ -254,25 +261,6 @@ This project uses GitHub Actions for continuous integration. Whenever changes ar
 3.  Update the coverage badge displayed at the top of this `README.md` file.
 
 This ensures that the coverage percentage is always up-to-date with the latest codebase.
-
-## Benchmarking
-
-The `device1k` benchmark simulates concurrent reports from 1000+ IoT devices interacting with the service. To run this benchmark, you must have a working instance of the service running.
-
-1.  **Start the IoT Metrics Service:**
-    You can start the service using one of the following commands:
-
-    ```bash
-    npm run dev
-    # or
-    go run ./cmd/server
-    ```
-
-2.  **Run the Benchmark:**
-    Once the service is running, execute the benchmark from the project root directory:
-    ```bash
-    go run ./benchmark/device1k
-    ```
 
 ## Benchmarking
 
