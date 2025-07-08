@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/proto"
 	"liyu1981.xyz/iot-metrics-service/pkg/common"
 	"liyu1981.xyz/iot-metrics-service/pkg/db"
@@ -79,6 +80,7 @@ func main() {
 				&pb.DeviceRequest{},
 			})
 			s := grpc.NewServer(grpc.UnaryInterceptor(interceptor))
+			reflection.Register(s)
 			pb.RegisterIOTServiceServer(s, &iotGrpcServer)
 			logger.Info("gRPC server created with:",
 				zap.String("default_limiter",

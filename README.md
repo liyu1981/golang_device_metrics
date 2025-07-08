@@ -160,22 +160,69 @@ To interact with the gRPC endpoints, you can use a tool like `grpcurl`. First, e
 #### Update Configuration (gRPC)
 
 ```bash
-grpsh curl -plaintext -d '{"deviceId": "device-1", "config": {"temperatureThreshold": 30.0, "batteryThreshold": 20.0}}' \
-  localhost:10801 liyu1981.xyz.iot_metric_service.IOTService/UpdateConfig
+grpcurl -plaintext -d '{"deviceId": "device-1", "config": {"temperatureThreshold": 30.0, "batteryThreshold": 20.0}}' localhost:10801 IOTService/UpdateConf
+ig
+```
+
+response
+
+```
+{
+  "status": {
+    "success": true,
+    "message": "OK"
+  }
+}
 ```
 
 #### Post Metrics (gRPC)
 
 ```bash
-grpsh curl -plaintext -d '{"deviceId": "device-1", "metric": {"timestamp": "2024-07-22T10:00:00Z", "temperature": 25.5, "battery": 80.2}}' \
-  localhost:10801 liyu1981.xyz.iot_metric_service.IOTService/PostMetrics
+grpcurl -plaintext -d '{"deviceId": "device-1", "metric": {"timestamp": "2024-07-22T10:00:00Z", "temperature": 35.5, "battery": 10.2}}' localhost:10801 IOTService/PostMetrics
+```
+
+response
+
+```
+{
+  "status": {
+    "success": true,
+    "message": "OK"
+  }
+}
 ```
 
 #### Get Alerts (gRPC)
 
 ```bash
-grpsh curl -plaintext -d '{"deviceId": "device-1"}' \
-  localhost:10801 liyu1981.xyz.iot_metric_service.IOTService/GetAlerts
+grpcurl -plaintext -d '{"deviceId": "device-1"}' localhost:10801 IOTService/GetAlerts
+```
+
+response
+
+```
+{
+  "status": {
+    "success": true,
+    "message": "OK"
+  },
+  "alerts": [
+    {
+      "id": "5222",
+      "deviceId": "device-1",
+      "timestamp": "2025-07-08T11:03:46.468635863Z",
+      "type": "temperature",
+      "message": "Temperature 35.50 exceeded threshold 30.00"
+    },
+    {
+      "id": "5223",
+      "deviceId": "device-1",
+      "timestamp": "2025-07-08T11:03:46.468635863Z",
+      "type": "battery",
+      "message": "Battery 10.20 below threshold 20.00"
+    }
+  ]
+}
 ```
 
 ## Testing and Coverage
@@ -297,7 +344,3 @@ The IoT Metrics Service is designed to collect, process, and manage metrics from
 3.  **Business Logic**: The `pkg/iot` layer processes the incoming data, applies business rules (e.g., checking thresholds), and generates alerts if necessary.
 4.  **Data Persistence**: Processed data (metrics, configurations, alerts) is stored in the database via the `pkg/db` layer.
 5.  **Data Retrieval**: Clients can query the service via gRPC or HTTP to retrieve device configurations, alerts, or other relevant information.
-
-### Scalability and Extensibility
-
-The modular design allows for independent development and scaling of different components. The clear separation of concerns (e.g., `db`, `grpc`, `http`, `iot`) makes it easier to introduce new features, integrate with different databases, or add new communication protocols in the future.
