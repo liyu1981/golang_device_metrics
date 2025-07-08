@@ -33,12 +33,22 @@ func (i *IOT) upsertConfig(deviceID string, input *models.Config) error {
 	return err
 }
 
+func (i *IOT) getDeviceConfig(deviceID string) (*models.Config, error) {
+	var config models.Config
+	err := i.Db.Conn.First(&config, "device_id = ?", deviceID).Error
+	return &config, err
+}
+
 type IConfigImpl struct {
 	iot *IOT
 }
 
 func (ic *IConfigImpl) UpsertConfig(deviceID string, input *models.Config) error {
 	return ic.iot.upsertConfig(deviceID, input)
+}
+
+func (ic *IConfigImpl) GetDeviceConfig(deviceID string) (*models.Config, error) {
+	return ic.iot.getDeviceConfig(deviceID)
 }
 
 func (i *IOT) GetIConfig() IConfig {

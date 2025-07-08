@@ -9,11 +9,10 @@ import (
 	"liyu1981.xyz/iot-metrics-service/pkg/models"
 )
 
-func (i *IOT) checkAndStoreAlerts(deviceID string, metric *models.Metric) error {
-	db := i.Db
-
-	var config models.Config
-	if err := db.Conn.First(&config, "device_id = ?", deviceID).Error; err != nil {
+func (i *IOT) checkAlerts(deviceID string, metric *models.Metric, upsertAlertFn func(alert *models.Alert) error) error {
+	var err error
+	var config *models.Config
+	if config, err = i.Config.GetDeviceConfig(deviceID); err != nil {
 		// no config, then no need to calcualte alerts
 		return nil
 	}
@@ -35,7 +34,7 @@ func (i *IOT) checkAndStoreAlerts(deviceID string, metric *models.Metric) error 
 
 		logger.Info("Alert found", zap.Reflect("alert", alert))
 
-		if err := db.Conn.Create(&alert).Error; err != nil {
+		if err = upsertAlertFn(&alert); err != nil {
 			return err
 		}
 
@@ -52,7 +51,7 @@ func (i *IOT) checkAndStoreAlerts(deviceID string, metric *models.Metric) error 
 
 		logger.Info("Alert found", zap.Reflect("alert", alert))
 
-		if err := db.Conn.Create(&alert).Error; err != nil {
+		if err = upsertAlertFn(&alert); err != nil {
 			return err
 		}
 
@@ -60,6 +59,10 @@ func (i *IOT) checkAndStoreAlerts(deviceID string, metric *models.Metric) error 
 	}
 
 	return nil
+}
+
+func (i *IOT) upsertAlert(data *models.Alert) error {
+	return i.Db.Conn.Create(data).Error
 }
 
 func (i *IOT) getDeviceAlerts(deviceID string) ([]models.Alert, error) {
@@ -80,7 +83,13 @@ func (ia *IAlertImpl) GetDeviceAlerts(deviceID string) ([]models.Alert, error) {
 }
 
 func (ia *IAlertImpl) CheckAndStoreAlerts(deviceID string, metric *models.Metric) error {
-	return ia.iot.checkAndStoreAlerts(deviceID, metric)
+	return ia.iot.checkAlerts(deviceID, metric, func(alert *models.Alert) error {
+		return ia.iot.upsertAlert(alert)
+	})
+}
+
+func (ia *IAlertImpl) UpsertAlert(data *models.Alert) error {
+	return ia.iot.upsertAlert(data)
 }
 
 func (i *IOT) GetIAlert() IAlert {

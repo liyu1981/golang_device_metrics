@@ -1,16 +1,17 @@
-package test
+package db
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"liyu1981.xyz/iot-metrics-service/pkg/common"
 	constant "liyu1981.xyz/iot-metrics-service/pkg/common"
-	"liyu1981.xyz/iot-metrics-service/pkg/db"
 )
 
 func TestWithEnvPath(t *testing.T) {
+	common.SetTestLoggerNop()
+
 	if os.Getenv(constant.EnvKeyRunIntegrationTests) != "true" {
 		t.Skip("Skipping integration test: RUN_INTEGRATION_TESTS environment variable not set")
 	}
@@ -37,9 +38,7 @@ func TestWithEnvPath(t *testing.T) {
 		_ = os.Remove(testPath)
 	}()
 
-	fmt.Println(os.Getenv(constant.EnvKeyIOTDbPath))
-
-	instance := db.GetInstance(db.UseSqliteDialector())
+	instance := GetInstance(UseSqliteDialector())
 	if instance == nil || instance.Conn == nil {
 		t.Fatal("Expected non-nil DB connection")
 	}

@@ -107,6 +107,20 @@ func (mr *MockIAlertMockRecorder) GetDeviceAlerts(deviceID any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceAlerts", reflect.TypeOf((*MockIAlert)(nil).GetDeviceAlerts), deviceID)
 }
 
+// UpsertAlert mocks base method.
+func (m *MockIAlert) UpsertAlert(data *models.Alert) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertAlert", data)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertAlert indicates an expected call of UpsertAlert.
+func (mr *MockIAlertMockRecorder) UpsertAlert(data any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertAlert", reflect.TypeOf((*MockIAlert)(nil).UpsertAlert), data)
+}
+
 // MockIConfig is a mock of IConfig interface.
 type MockIConfig struct {
 	ctrl     *gomock.Controller
@@ -129,6 +143,21 @@ func NewMockIConfig(ctrl *gomock.Controller) *MockIConfig {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockIConfig) EXPECT() *MockIConfigMockRecorder {
 	return m.recorder
+}
+
+// GetDeviceConfig mocks base method.
+func (m *MockIConfig) GetDeviceConfig(deviceID string) (*models.Config, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDeviceConfig", deviceID)
+	ret0, _ := ret[0].(*models.Config)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDeviceConfig indicates an expected call of GetDeviceConfig.
+func (mr *MockIConfigMockRecorder) GetDeviceConfig(deviceID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceConfig", reflect.TypeOf((*MockIConfig)(nil).GetDeviceConfig), deviceID)
 }
 
 // UpsertConfig mocks base method.

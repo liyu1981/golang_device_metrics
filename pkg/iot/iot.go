@@ -11,11 +11,13 @@ type IMetric interface {
 
 type IAlert interface {
 	CheckAndStoreAlerts(deviceID string, metric *models.Metric) error
+	UpsertAlert(data *models.Alert) error
 	GetDeviceAlerts(deviceID string) ([]models.Alert, error)
 }
 
 type IConfig interface {
 	UpsertConfig(deviceID string, input *models.Config) error
+	GetDeviceConfig(deviceID string) (*models.Config, error)
 }
 
 type IOT struct {
