@@ -1,6 +1,6 @@
 # IoT Metrics Service
 
-![Go Coverage](https://img.shields.io/badge/coverage-0%25-lightgrey)
+![Go Coverage](https://img.shields.io/badge/coverage-95.2%25-brightgreen)
 
 This service collects and processes metrics (temperature and battery level) from IoT devices. It provides both gRPC and HTTP endpoints for data ingestion and management.
 
