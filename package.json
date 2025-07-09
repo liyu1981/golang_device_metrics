@@ -4,6 +4,7 @@
   "scripts": {
     "postinstall": "node ./scripts/install-tools.js",
     "run": "go run ./cmd/server",
+    "build": "go build -o iot_metric_server -ldflags \"-s -w\"  ./cmd/server",
     "dev": "./bin/air",
     "lint": "./bin/golangci-lint run",
     "spell": "./bin/typos .",

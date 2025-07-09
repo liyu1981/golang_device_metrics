@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.24"
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build binary
+        run: npm run build
+
+      - name: Package release assets
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          mv iot_metric_server iot_metric_server_linux_amd64
+          zip iot_metric_server_linux_amd64_${COMMIT_HASH}.zip iot_metric_server_linux_amd64 .env.example
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: iot_metric_server_linux_amd64_*.zip
+          body: "New release"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
