@@ -12,6 +12,13 @@ The service also allows for device-specific configurations, such as setting thre
 
 A rate limiter is in place to control the request rate from each device, preventing system overload. The service can be configured to use either an in-memory or a file-based SQLite database.
 
+List of implemented things
+
+1. http restful server and grpc server with all endpoints, with logs for incoming metrics, threshold breaches and config updates
+2. in memory sqlite or file based sqlite as data storage (see `.env.example`)
+3. per device limit control (see below examples)
+4. concurrent benchmark program (`./benchmark/device1k`)
+
 ## Local Run Instructions
 
 0. **Dev system requirement:**
@@ -20,7 +27,7 @@ A rate limiter is in place to control the request rate from each device, prevent
 - Golang > 1.24.0
 - Nodejs > 22.15.1
 
-**Caution**: not tested on Macos, specifically `npm run postinstall` could fail. Recommend to use devcontainer of VSCode if on Macos (just open project in VSCode it will prompt open in devcontainer)
+**Caution**: not tested on Macos, specifically `npm run postinstall` could fail. Recommend to use devcontainer of VSCode if on Macos (just open project in VSCode it will prompt open in devcontainer). If only want to run the server with golang, can `go run ./cmd/server` after `cp .env.example .env`.
 
 1.  **Install dependencies:**
 
@@ -92,7 +99,7 @@ Here are some examples of how to interact with the HTTP endpoints:
 - **Request:**
 
   ```bash
-  curl -X PUT http://localhost:1080/devices/device-1/config \
+  curl -X POST http://localhost:1080/devices/device-1/config \
   -H "Content-Type: application/json" \
   -d '{
       "temperature_threshold": 30.0,
@@ -230,6 +237,17 @@ response
     }
   ]
 }
+```
+
+### Logs Examples
+
+When normal running server, the logs will be saved at `logs/app.log` (with file rotation). Samples of logs are
+
+```
+{"level":"info","ts":"2025-07-08T17:03:05.117+1000","logger":"iot_core","caller":"iot/metric.go:24","msg":"Received metric for device","category":"metric","metric":{"ID":0,"DeviceID":"18dddb82-fef9-4269-954c-4266326f8582","Timestamp":"2025-07-08T17:03:05+10:00","Temperature":53.57,"Battery":81.72}}
+{"level":"info","ts":"2025-07-09T15:42:18.666+1000","logger":"iot_core","caller":"iot/config.go:30","msg":"Upserted config for device","category":"config","config":{"DeviceID":"1db55fa4-12a4-41d2-9126-b7aff90cce2c","TemperatureThreshold":56.09,"BatteryThreshold":94.67,"Metrics":null,"Alerts":null}}
+{"level":"info","ts":"2025-07-08T17:03:05.124+1000","logger":"iot_core","caller":"iot/alert.go:53","msg":"Alert found","category":"alert","alert":{"ID":0,"DeviceID":"b60f1de6-f32c-4233-8102-832ea081a29e","Timestamp":"2025-07-08T17:03:05.124428439+10:00","Type":"battery","Message":"Battery 68.00 below threshold 73.55"}}
+{"level":"info","ts":"2025-07-08T17:03:05.127+1000","logger":"iot_core","caller":"iot/alert.go:59","msg":"Alert saved","category":"alert","alert":{"ID":3289,"DeviceID":"b60f1de6-f32c-4233-8102-832ea081a29e","Timestamp":"2025-07-08T17:03:05.124428439+10:00","Type":"battery","Message":"Battery 68.00 below threshold 73.55"}}
 ```
 
 ## Testing and Coverage
