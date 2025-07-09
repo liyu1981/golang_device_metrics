@@ -149,6 +149,19 @@ func TestPostMetricsAndGetAlerts_EdgeCases(t *testing.T) {
 	{
 		rs := setupTestServer()
 		deviceID := uuid.NewString()
+		// This will not work too
+		payload := "{\"timestamp\": \"-1\", \"temperature\": 45.5, \"battery\": 20.0}"
+
+		req := httptest.NewRequest("POST", "/devices/"+deviceID+"/metrics", bytes.NewReader([]byte(payload)))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		rs.Server.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	}
+
+	{
+		rs := setupTestServer()
+		deviceID := uuid.NewString()
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		mockIAlert := mocks.NewMockIAlert(ctrl)
